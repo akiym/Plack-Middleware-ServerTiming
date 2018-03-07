@@ -64,7 +64,10 @@
          "web" : "https://github.com/akiym/Plack-Middleware-ServerTiming"
       }
    },
-   "version" : "0.01",
+   "version" : "0.02",
    "x_authority" : "cpan:AKIYM",
+   "x_contributors" : [
+      "karupanerura <karupa@cpan.org>"
+   ],
    "x_serialization_backend" : "JSON::PP version 2.27400_02"
 }

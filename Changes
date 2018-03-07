@@ -2,6 +2,10 @@ Revision history for Perl extension Plack-Middleware-ServerTiming
 
 {{$NEXT}}
 
+0.02 2018-03-07T06:56:34Z
+
+    - add Plack::ServerTiming (@karupanerura++)
+
 0.01 2018-03-07T06:12:30Z
 
     - original version
