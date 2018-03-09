@@ -4,7 +4,7 @@ use warnings;
 use parent qw/Plack::Middleware/;
 use Plack::Util;
 
-our $VERSION = "0.02";
+our $VERSION = "0.03";
 
 sub call {
     my ($self, $env) = @_;
