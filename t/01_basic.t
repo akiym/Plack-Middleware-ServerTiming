@@ -11,9 +11,10 @@ my $app = builder {
     sub {
         my $env = shift;
         push @{$env->{'psgix.server-timing'}}, ['miss'];
-        push @{$env->{'psgix.server-timing'}}, ['db', {dur  => 53}];
+        push @{$env->{'psgix.server-timing'}}, ['db', {dur => 53}];
         push @{$env->{'psgix.server-timing'}}, ['dc', {desc => 'atl'}];
         push @{$env->{'psgix.server-timing'}}, ['da', {dur => 99, desc => 'A B C'}];
+        push @{$env->{'psgix.server-timing'}}, ['a', {desc => undef, wrongkey => 1}];
         return [200, ['Content-Type'=>'text/html'], ["Hello"]];
     };
 };
@@ -22,7 +23,7 @@ test_psgi $app, sub {
     my $cb = shift;
     my $res = $cb->(GET "/");
 
-    is $res->header('Server-Timing'), 'miss, db;dur=53, dc;desc=atl, da;dur=99;desc="A B C"';
+    is $res->header('Server-Timing'), 'miss, db;dur=53, dc;desc=atl, da;dur=99;desc="A B C", a';
 };
 
 done_testing;
