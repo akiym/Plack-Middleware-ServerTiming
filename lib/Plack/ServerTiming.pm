@@ -16,6 +16,31 @@ sub record_timing {
     push @{ $self->{env}->{'psgix.server-timing'} } => [$name, $field];
 }
 
+sub guard {
+    my $self = shift;
+    return Plack::ServerTiming::Guard->new($self->{env}, @_);
+}
+
+package # hide from pause
+    Plack::ServerTiming::Guard;
+use Time::HiRes;
+
+sub new {
+    my ($class, $env, $name, $desc) = @_;
+    return bless {
+        env   => $env,
+        start => [Time::HiRes::gettimeofday],
+        name  => $name,
+        desc  => $desc,
+    }, $class;
+}
+
+sub DESTROY {
+    my $self = shift;
+    my $dur = Time::HiRes::tv_interval($self->{start}) * 1000;
+    push @{ $self->{env}->{'psgix.server-timing'} } => [$self->{name}, {dur => $dur, desc => $self->{desc}}];
+}
+
 1;
 __END__
 
@@ -46,6 +71,33 @@ Plack::ServerTiming - Frontend for Plack::Middleware::ServerTiming
 =head1 DESCRIPTION
 
 This module provides high level API for L<Plack::Middleware::ServerTiming>.
+
+=head1 METHODS
+
+=over 4
+
+=item $timing = Plack::ServerTiming->new($env)
+
+This will create a new instance of L<Plack::SeverTiming>.
+
+=item $timing->record_timing($name, {dur => $duration, desc => $description})
+
+C<record_timing()> adds a metric consisting of name, duration and description.
+
+    $timing->record_timing('total', {dur => 123.4});
+
+=item $timing->guard($name, $description)
+
+C<guard()> creates a guard instance to record a duration. This will add a elapsed
+time until exit the scope as metric.
+
+    {
+        my $g = $timing->guard('elapsed', 'sleep 1');
+        sleep 1;
+    }
+    # `elapsed;dur=1000.224;desc="sleep 1"`
+
+=back
 
 =head1 SEE ALSO
 

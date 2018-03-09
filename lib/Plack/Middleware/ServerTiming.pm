@@ -19,7 +19,7 @@ sub call {
         for my $metric (@{$env->{'psgix.server-timing'}}) {
             my $name  = $metric->[0];
             my %field = %{$metric->[1] || {}};
-            my @opt = map { "$_=" . _escape($field{$_}) } grep { exists $field{$_} } qw/dur desc/;
+            my @opt = map { "$_=" . _escape($field{$_}) } grep { defined $field{$_} } qw/dur desc/;
             push @header, join ';', $name, @opt;
         }
         Plack::Util::header_set($res->[1], 'Server-Timing', join(', ', @header));
